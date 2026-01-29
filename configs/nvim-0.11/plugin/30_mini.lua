@@ -304,58 +304,59 @@ end)
 -- - 入力時のコマンド範囲（開始時の行番号など）の自動プレビュー
 later(function() require('mini.cmdline').setup() end)
 
--- Tweak and save any color scheme. Contains utility functions to work with
--- color spaces and color schemes. Example usage:
--- - `:Colorscheme default` - switch with animation to the default color scheme
+-- 任意のカラースキームを調整して保存します。色空間とカラースキームを操作するための
+-- ユーティリティ関数が含まれています。使用例:
+-- - `:Colorscheme default` - アニメーション付きでデフォルトのカラースキームに切り替え
 --
--- See also:
--- - `:h MiniColors.interactive()` - interactively tweak color scheme
--- - `:h MiniColors-recipes` - common recipes to use during interactive tweaking
--- - `:h MiniColors.convert()` - convert between color spaces
--- - `:h MiniColors-color-spaces` - list of supported color sapces
+-- 参照:
+-- - `:h MiniColors.interactive()` - カラースキームを対話的に調整
+-- - `:h MiniColors-recipes` - 対話的な調整中に使用する一般的なレシピ
+-- - `:h MiniColors.convert()` - 色空間間の変換
+-- - `:h MiniColors-color-spaces` - サポートされている色空間のリスト
 --
--- It is not enabled by default because it is not really needed on a daily basis.
--- Uncomment next line (use `gcc`) to enable.
+-- 日常的には本当に必要ではないため、デフォルトでは有効になっていません。
+-- 有効にするには次の行のコメントを解除してください（`gcc` を使用）。
 -- later(function() require('mini.colors').setup() end)
 
--- Comment lines. Provides functionality to work with commented lines.
--- Uses `:h 'commentstring'` option to infer comment structure.
--- Example usage:
--- - `gcip` - toggle comment (`gc`) *i*inside *p*aragraph
--- - `vapgc` - *v*isually select *a*round *p*aragraph and toggle comment (`gc`)
--- - `gcgc` - uncomment (`gc`, operator) comment block at cursor (`gc`, textobject)
+-- 行をコメントアウトします。コメント行を操作する機能を提供します。
+-- コメント構造を推測するために `:h 'commentstring'` オプションを使用します。
+-- 使用例:
+-- - `gcip` - 段落内のコメントを切り替え（`gc`）
+-- - `vapgc` - 段落周囲を視覚的に選択（*v*isually select *a*round *p*aragraph）して
+--   コメントを切り替え（`gc`）
+-- - `gcgc` - カーソル位置のコメントブロックのコメント解除（`gc`、オペレーター）
+--   (`gc`、テキストオブジェクト）
 --
--- The built-in `:h commenting` is based on 'mini.comment'. Yet this module is
--- still enabled as it provides more customization opportunities.
+-- 組み込みの `:h commenting` は 'mini.comment' に基づいています。それでもこのモジュールは
+-- より多くのカスタマイズの機会を提供するため、まだ有効になっています。
 later(function() require('mini.comment').setup() end)
 
--- Completion and signature help. Implements async "two stage" autocompletion:
--- - Based on attached LSP servers that support completion.
--- - Fallback (based on built-in keyword completion) if there is no LSP candidates.
+-- 補完とシグネチャヘルプ。非同期の「2段階」自動補完を実装します:
+-- - 補完をサポートするアタッチされたLSPサーバーに基づく
+-- - LSP候補がない場合のフォールバック（組み込みキーワード補完に基づく）
 --
--- Example usage in Insert mode with attached LSP:
--- - Start typing text that should be recognized by LSP (like variable name).
--- - After 100ms a popup menu with candidates appears.
--- - Press `<Tab>` / `<S-Tab>` to navigate down/up the list. These are set up
---   in 'mini.keymap'. You can also use `<C-n>` / `<C-p>`.
--- - During navigation there is an info window to the right showing extra info
---   that the LSP server can provide about the candidate. It appears after the
---   candidate stays selected for 100ms. Use `<C-f>` / `<C-b>` to scroll it.
--- - Navigating to an entry also changes buffer text. If you are happy with it,
---   keep typing after it. To discard completion completely, press `<C-e>`.
--- - After pressing special trigger(s), usually `(`, a window appears that shows
---   the signature of the current function/method. It gets updated as you type
---   showing the currently active parameter.
+-- アタッチされたLSPでのInsert modeでの使用例:
+-- - LSPが認識すべきテキスト（変数名など）の入力を開始します。
+-- - 100ms後に候補を含むポップアップメニューが表示されます。
+-- - `<Tab>` / `<S-Tab>` を押してリストを下/上にナビゲートします。これらは 'mini.keymap'
+--   で設定されています。`<C-n>` / `<C-p>` も使用できます。
+-- - ナビゲーション中、右側に情報ウィンドウが表示され、LSPサーバーが候補について提供できる
+--   追加情報が表示されます。候補が100ms選択された後に表示されます。`<C-f>` / `<C-b>` を
+--   使用してスクロールできます。
+-- - エントリにナビゲートするとバッファテキストも変更されます。それで満足な場合は、
+--   その後入力を続けます。補完を完全に破棄するには、`<C-e>` を押します。
+-- - 特別なトリガー（通常は `(`）を押すと、現在の関数/メソッドのシグネチャを表示する
+--   ウィンドウが表示されます。入力すると更新され、現在アクティブなパラメーターが表示されます。
 --
--- Example usage in Insert mode without an attached LSP or in places not
--- supported by the LSP (like comments):
--- - Start typing a word that is present in current or opened buffers.
--- - After 100ms popup menu with candidates appears.
--- - Navigate with `<Tab>` / `<S-Tab>` or `<C-n>` / `<C-p>`. This also updates
---   buffer text. If happy with choice, keep typing. Stop with `<C-e>`.
+-- アタッチされたLSPなし、またはLSPがサポートしていない場所（コメントなど）での
+-- Insert modeでの使用例:
+-- - 現在のバッファまたは開いているバッファに存在する単語の入力を開始します。
+-- - 100ms後に候補を含むポップアップメニューが表示されます。
+-- - `<Tab>` / `<S-Tab>` または `<C-n>` / `<C-p>` でナビゲートします。これによりバッファ
+--   テキストも更新されます。選択に満足したら、入力を続けます。`<C-e>` で停止します。
 --
--- It also works with snippet candidates provided by LSP server. Best experience
--- when paired with 'mini.snippets' (which is set up in this file).
+-- LSPサーバーが提供するスニペット候補でも機能します。'mini.snippets'（このファイルで
+-- セットアップされています）と組み合わせると最高の体験が得られます。
 later(function()
   -- Customize post-processing of LSP responses for a better user experience.
   -- Don't show 'Text' suggestions (usually noisy) and show snippets last.
