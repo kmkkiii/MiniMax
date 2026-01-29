@@ -2,75 +2,75 @@
 -- │ MINI configuration │
 -- └────────────────────┘
 --
--- This file contains configuration of the MINI parts of the config.
--- It contains only configs for the 'mini.nvim' plugin (installed in 'init.lua').
+-- このファイルには設定のMINI部分の設定が含まれています。
+-- 'mini.nvim' プラグイン（'init.lua' でインストール）の設定のみが含まれています。
 --
--- 'mini.nvim' is a library of modules. Each is enabled independently via
--- `require('mini.xxx').setup()` convention. It creates all intended side effects:
--- mappings, autocommands, highlight groups, etc. It also creates a global
--- `MiniXxx` table that can be later used to access module's features.
+-- 'mini.nvim' はモジュールのライブラリです。各モジュールは `require('mini.xxx').setup()`
+-- という規約を通じて独立して有効化されます。これはすべての意図された副作用を作成します:
+-- マッピング、自動コマンド、ハイライトグループなど。また、後でモジュールの機能にアクセス
+-- するために使用できるグローバルな `MiniXxx` テーブルを作成します。
 --
--- Every module's `setup()` function accepts an optional `config` table to
--- adjust its behavior. See the structure of this table at `:h MiniXxx.config`.
+-- すべてのモジュールの `setup()` 関数は、その動作を調整するためのオプションの `config`
+-- テーブルを受け入れます。このテーブルの構造は `:h MiniXxx.config` を参照してください。
 --
--- See `:h mini.nvim-general-principles` for more general principles.
+-- より一般的な原則については `:h mini.nvim-general-principles` を参照してください。
 --
--- Here each module's `setup()` has a brief explanation of what the module is for,
--- its usage examples (uses Leader mappings from 'plugin/20_keymaps.lua'), and
--- possible directions for more info.
--- For more info about a module see its help page (`:h mini.xxx` for 'mini.xxx').
+-- ここでは各モジュールの `setup()` に、モジュールが何のためのものか、その使用例
+-- ('plugin/20_keymaps.lua' のLeaderマッピングを使用)、および詳細情報の方向性について
+-- 簡単な説明があります。
+-- モジュールの詳細については、そのヘルプページを参照してください（'mini.xxx' の場合は `:h mini.xxx`）。
 
--- To minimize the time until first screen draw, modules are enabled in two steps:
--- - Step one enables everything that is needed for first draw with `now()`.
---   Sometimes is needed only if Neovim is started as `nvim -- path/to/file`.
--- - Everything else is delayed until the first draw with `later()`.
+-- 最初の画面描画までの時間を最小限にするため、モジュールは2つのステップで有効化されます:
+-- - ステップ1は `now()` で最初の描画に必要なすべてを有効化します。
+--   Neovimが `nvim -- path/to/file` として起動された場合にのみ必要な場合があります。
+-- - それ以外はすべて `later()` で最初の描画まで遅延されます。
 local now, later = MiniDeps.now, MiniDeps.later
 local now_if_args = _G.Config.now_if_args
 
--- Step one ===================================================================
--- Enable 'miniwinter' color scheme. It comes with 'mini.nvim' and uses 'mini.hues'.
+-- ステップ1 =================================================================
+-- 'miniwinter' カラースキームを有効化。これは 'mini.nvim' に付属し、'mini.hues' を使用します。
 --
--- See also:
--- - `:h mini.nvim-color-schemes` - list of other color schemes
--- - `:h MiniHues-examples` - how to define highlighting with 'mini.hues'
--- - 'plugin/40_plugins.lua' honorable mentions - other good color schemes
+-- 参照:
+-- - `:h mini.nvim-color-schemes` - 他のカラースキームのリスト
+-- - `:h MiniHues-examples` - 'mini.hues' でハイライトを定義する方法
+-- - 'plugin/40_plugins.lua' の名誉ある言及 - 他の優れたカラースキーム
 now(function() vim.cmd('colorscheme miniwinter') end)
 
--- You can try these other 'mini.hues'-based color schemes (uncomment with `gcc`):
+-- これらの他の 'mini.hues' ベースのカラースキームを試すことができます（`gcc` でコメント解除）:
 -- now(function() vim.cmd('colorscheme minispring') end)
 -- now(function() vim.cmd('colorscheme minisummer') end)
 -- now(function() vim.cmd('colorscheme miniautumn') end)
 -- now(function() vim.cmd('colorscheme randomhue') end)
 
--- Common configuration presets. Example usage:
--- - `<C-s>` in Insert mode - save and go to Normal mode
--- - `go` / `gO` - insert empty line before/after in Normal mode
--- - `gy` / `gp` - copy / paste from system clipboard
--- - `\` + key - toggle common options. Like `\h` toggles highlighting search.
--- - `<C-hjkl>` (four combos) - navigate between windows.
--- - `<M-hjkl>` in Insert/Command mode - navigate in that mode.
+-- 一般的な設定プリセット。使用例:
+-- - Insert modeで `<C-s>` - 保存してNormal modeに移行
+-- - `go` / `gO` - Normal modeで前/後に空行を挿入
+-- - `gy` / `gp` - システムクリップボードからコピー/ペースト
+-- - `\` + キー - 一般的なオプションを切り替え。例: `\h` は検索のハイライトを切り替え
+-- - `<C-hjkl>`（4つの組み合わせ）- ウィンドウ間を移動
+-- - Insert/Command modeで `<M-hjkl>` - そのモードで移動
 --
--- See also:
--- - `:h MiniBasics.config.options` - list of adjusted options
--- - `:h MiniBasics.config.mappings` - list of created mappings
--- - `:h MiniBasics.config.autocommands` - list of created autocommands
+-- 参照:
+-- - `:h MiniBasics.config.options` - 調整されたオプションのリスト
+-- - `:h MiniBasics.config.mappings` - 作成されたマッピングのリスト
+-- - `:h MiniBasics.config.autocommands` - 作成された自動コマンドのリスト
 now(function()
   require('mini.basics').setup({
-    -- Manage options in 'plugin/10_options.lua' for didactic purposes
+    -- 教育目的で 'plugin/10_options.lua' でオプションを管理
     options = { basic = false },
     mappings = {
-      -- Create `<C-hjkl>` mappings for window navigation
+      -- ウィンドウナビゲーション用の `<C-hjkl>` マッピングを作成
       windows = true,
-      -- Create `<M-hjkl>` mappings for navigation in Insert and Command modes
+      -- InsertとCommandモードでのナビゲーション用の `<M-hjkl>` マッピングを作成
       move_with_alt = true,
     },
   })
 end)
 
--- Icon provider. Usually no need to use manually. It is used by plugins like
--- 'mini.pick', 'mini.files', 'mini.statusline', and others.
+-- アイコンプロバイダー。通常、手動で使用する必要はありません。'mini.pick'、'mini.files'、
+-- 'mini.statusline' などのプラグインによって使用されます。
 now(function()
-  -- Set up to not prefer extension-based icon for some extensions
+  -- 一部の拡張子に対して拡張子ベースのアイコンを優先しないように設定
   local ext3_blocklist = { scm = true, txt = true, yml = true }
   local ext4_blocklist = { json = true, yaml = true }
   require('mini.icons').setup({
@@ -79,237 +79,229 @@ now(function()
     end,
   })
 
-  -- Mock 'nvim-tree/nvim-web-devicons' for plugins without 'mini.icons' support.
-  -- Not needed for 'mini.nvim' or MiniMax, but might be useful for others.
+  -- 'mini.icons' サポートのないプラグインのために 'nvim-tree/nvim-web-devicons' をモック。
+  -- 'mini.nvim' または MiniMax には不要ですが、他のプラグインには有用かもしれません。
   later(MiniIcons.mock_nvim_web_devicons)
 
-  -- Add LSP kind icons. Useful for 'mini.completion'.
+  -- LSP kindアイコンを追加。'mini.completion' に有用です。
   later(MiniIcons.tweak_lsp_kind)
 end)
 
--- Miscellaneous small but useful functions. Example usage:
--- - `<Leader>oz` - toggle between "zoomed" and regular view of current buffer
--- - `<Leader>or` - resize window to its "editable width"
--- - `:lua put_text(vim.lsp.get_clients())` - put output of a function below
---   cursor in current buffer. Useful for a detailed exploration.
--- - `:lua put(MiniMisc.stat_summary(MiniMisc.bench_time(f, 100)))` - run
---   function `f` 100 times and report statistical summary of execution times
+-- さまざまな小さいが便利な関数群。使用例:
+-- - `<Leader>oz` - 現在のバッファの「ズーム」表示と通常表示を切り替え
+-- - `<Leader>or` - ウィンドウを「編集可能な幅」にリサイズ
+-- - `:lua put_text(vim.lsp.get_clients())` - 関数の出力を現在のバッファの
+--   カーソル下に配置。詳細な探索に便利です。
+-- - `:lua put(MiniMisc.stat_summary(MiniMisc.bench_time(f, 100)))` - 関数 `f` を
+--   100回実行し、実行時間の統計サマリーをレポート
 --
--- Uses `now()` for `setup_xxx()` to work when started like `nvim -- path/to/file`
+-- `nvim -- path/to/file` のように起動された場合に `setup_xxx()` が動作するように `now()` を使用
 now_if_args(function()
-  -- Makes `:h MiniMisc.put()` and `:h MiniMisc.put_text()` public
+  -- `:h MiniMisc.put()` と `:h MiniMisc.put_text()` を公開
   require('mini.misc').setup()
 
-  -- Change current working directory based on the current file path. It
-  -- searches up the file tree until the first root marker ('.git' or 'Makefile')
-  -- and sets their parent directory as a current directory.
-  -- This is helpful when simultaneously dealing with files from several projects.
+  -- 現在のファイルパスに基づいて現在の作業ディレクトリを変更。最初のルートマーカー
+  -- （'.git' または 'Makefile'）までファイルツリーを上に検索し、その親ディレクトリを
+  -- 現在のディレクトリとして設定します。
+  -- これは複数のプロジェクトのファイルを同時に扱う際に役立ちます。
   MiniMisc.setup_auto_root()
 
-  -- Restore latest cursor position on file open
+  -- ファイルを開く際に最後のカーソル位置を復元
   MiniMisc.setup_restore_cursor()
 
-  -- Synchronize terminal emulator background with Neovim's background to remove
-  -- possibly different color padding around Neovim instance
+  -- Neovimインスタンスの周りの異なる可能性のあるカラーパディングを削除するために
+  -- ターミナルエミュレータの背景とNeovimの背景を同期
   MiniMisc.setup_termbg_sync()
 end)
 
--- Notifications provider. Shows all kinds of notifications in the upper right
--- corner (by default). Example usage:
--- - `:h vim.notify()` - show notification (hides automatically)
--- - `<Leader>en` - show notification history
+-- 通知プロバイダー。あらゆる種類の通知を右上隅（デフォルト）に表示します。使用例:
+-- - `:h vim.notify()` - 通知を表示（自動的に非表示）
+-- - `<Leader>en` - 通知履歴を表示
 --
--- See also:
--- - `:h MiniNotify.config` for some of common configuration examples.
+-- 参照:
+-- - `:h MiniNotify.config` - 一般的な設定例
 now(function() require('mini.notify').setup() end)
 
--- Session management. A thin wrapper around `:h mksession` that consistently
--- manages session files. Example usage:
--- - `<Leader>sn` - start new session
--- - `<Leader>sr` - read previously started session
--- - `<Leader>sd` - delete previously started session
+-- セッション管理。セッションファイルを一貫して管理する `:h mksession` の薄いラッパー。使用例:
+-- - `<Leader>sn` - 新しいセッションを開始
+-- - `<Leader>sr` - 以前に開始したセッションを読み込み
+-- - `<Leader>sd` - 以前に開始したセッションを削除
 now(function() require('mini.sessions').setup() end)
 
--- Start screen. This is what is shown when you open Neovim like `nvim`.
--- Example usage:
--- - Type prefix keys to limit available candidates
--- - Navigate down/up with `<C-n>` and `<C-p>`
--- - Press `<CR>` to select an entry
+-- スタート画面。`nvim` のようにNeovimを開いたときに表示されるものです。使用例:
+-- - プレフィックスキーを入力して利用可能な候補を制限
+-- - `<C-n>` と `<C-p>` で下/上に移動
+-- - `<CR>` を押してエントリを選択
 --
--- See also:
--- - `:h MiniStarter-example-config` - non-default config examples
--- - `:h MiniStarter-lifecycle` - how to work with Starter buffer
+-- 参照:
+-- - `:h MiniStarter-example-config` - デフォルト以外の設定例
+-- - `:h MiniStarter-lifecycle` - Starterバッファでの作業方法
 now(function() require('mini.starter').setup() end)
 
--- Statusline. Sets `:h 'statusline'` to show more info in a line below window.
--- Example usage:
--- - Left most section indicates current mode (text + highlighting).
--- - Second from left section shows "developer info": Git, diff, diagnostics, LSP.
--- - Center section shows the name of displayed buffer.
--- - Second to right section shows more buffer info.
--- - Right most section shows current cursor coordinates and search results.
+-- ステータスライン。ウィンドウ下の行により多くの情報を表示するために `:h 'statusline'` を設定します。使用例:
+-- - 最も左のセクションは現在のモードを示します（テキスト + ハイライト）
+-- - 左から2番目のセクションは「開発者情報」を表示: Git、diff、診断、LSP
+-- - 中央のセクションは表示されているバッファの名前を表示
+-- - 右から2番目のセクションはより多くのバッファ情報を表示
+-- - 最も右のセクションは現在のカーソル座標と検索結果を表示
 --
 -- See also:
 -- - `:h MiniStatusline-example-content` - example of default content. Use it to
---   configure a custom statusline by setting `config.content.active` function.
+--   `config.content.active` 関数を設定してカスタムステータスラインを設定できます。
 now(function() require('mini.statusline').setup() end)
 
--- Tabline. Sets `:h 'tabline'` to show all listed buffers in a line at the top.
--- Buffers are ordered as they were created. Navigate with `[b` and `]b`.
+-- タブライン。すべてのリストされたバッファを上部の行に表示するために `:h 'tabline'` を設定します。
+-- バッファは作成された順序で並べられます。`[b` と `]b` でナビゲートします。
 now(function() require('mini.tabline').setup() end)
 
--- Step two ===================================================================
+-- ステップ2 =================================================================
 
--- Extra 'mini.nvim' functionality.
+-- 追加の 'mini.nvim' 機能。
 --
--- See also:
--- - `:h MiniExtra.pickers` - pickers. Most are mapped in `<Leader>f` group.
---   Calling `setup()` makes 'mini.pick' respect 'mini.extra' pickers.
--- - `:h MiniExtra.gen_ai_spec` - 'mini.ai' textobject specifications
--- - `:h MiniExtra.gen_highlighter` - 'mini.hipatterns' highlighters
+-- 参照:
+-- - `:h MiniExtra.pickers` - ピッカー。ほとんどは `<Leader>f` グループにマッピングされています。
+--   `setup()` を呼び出すと 'mini.pick' が 'mini.extra' ピッカーを尊重します。
+-- - `:h MiniExtra.gen_ai_spec` - 'mini.ai' テキストオブジェクト仕様
+-- - `:h MiniExtra.gen_highlighter` - 'mini.hipatterns' ハイライター
 later(function() require('mini.extra').setup() end)
 
--- Extend and create a/i textobjects, like `:h a(`, `:h a'`, and more).
--- Contains not only `a` and `i` type of textobjects, but also their "next" and
--- "last" variants that will explicitly search for textobjects after and before
--- cursor. Example usage:
--- - `ci)` - *c*hange *i*inside parenthesis (`)`)
--- - `di(` - *d*elete *i*inside padded parenthesis (`(`)
--- - `yaq` - *y*ank *a*round *q*uote (any of "", '', or ``)
--- - `vif` - *v*isually select *i*inside *f*unction call
--- - `cina` - *c*hange *i*nside *n*ext *a*rgument
--- - `valaala` - *v*isually select *a*round *l*ast (i.e. previous) *a*rgument
---   and then again reselect *a*round new *l*ast *a*rgument
+-- `:h a(`、`:h a'` などの a/i テキストオブジェクトを拡張および作成します。
+-- `a` と `i` タイプのテキストオブジェクトだけでなく、カーソルの後と前のテキストオブジェクトを
+-- 明示的に検索する "next" と "last" バリアントも含まれます。使用例:
+-- - `ci)` - 括弧（`)`）内を変更（*c*hange *i*nside）
+-- - `di(` - パディングされた括弧（`(`）内を削除（*d*elete *i*nside）
+-- - `yaq` - クォート（""、''、または `` のいずれか）周囲をヤンク（*y*ank *a*round *q*uote）
+-- - `vif` - 関数呼び出し内を視覚的に選択（*v*isually select *i*nside *f*unction call）
+-- - `cina` - 次の引数内を変更（*c*hange *i*nside *n*ext *a*rgument）
+-- - `valaala` - 最後（つまり前）の引数周囲を視覚的に選択（*v*isually select *a*round *l*ast *a*rgument）
+--   してから再び新しい最後の引数周囲を再選択（*a*round new *l*ast *a*rgument）
 --
--- See also:
--- - `:h text-objects` - general info about what textobjects are
--- - `:h MiniAi-builtin-textobjects` - list of all supported textobjects
--- - `:h MiniAi-textobject-specification` - examples of custom textobjects
+-- 参照:
+-- - `:h text-objects` - テキストオブジェクトとは何かについての一般情報
+-- - `:h MiniAi-builtin-textobjects` - サポートされているすべてのテキストオブジェクトのリスト
+-- - `:h MiniAi-textobject-specification` - カスタムテキストオブジェクトの例
 later(function()
   local ai = require('mini.ai')
   ai.setup({
-    -- 'mini.ai' can be extended with custom textobjects
+    -- 'mini.ai' はカスタムテキストオブジェクトで拡張できます
     custom_textobjects = {
-      -- Make `aB` / `iB` act on around/inside whole *b*uffer
+      -- `aB` / `iB` をバッファ全体の周囲/内側に作用させる
       B = MiniExtra.gen_ai_spec.buffer(),
-      -- For more complicated textobjects that require structural awareness,
-      -- use tree-sitter. This example makes `aF`/`iF` mean around/inside function
-      -- definition (not call). See `:h MiniAi.gen_spec.treesitter()` for details.
+      -- 構造認識が必要なより複雑なテキストオブジェクトの場合は、tree-sitterを使用します。
+      -- この例では `aF`/`iF` を関数定義（呼び出しではない）の周囲/内側を意味するようにします。
+      -- 詳細は `:h MiniAi.gen_spec.treesitter()` を参照してください。
       F = ai.gen_spec.treesitter({ a = '@function.outer', i = '@function.inner' }),
     },
 
-    -- 'mini.ai' by default mostly mimics built-in search behavior: first try
-    -- to find textobject covering cursor, then try to find to the right.
-    -- Although this works in most cases, some are confusing. It is more robust to
-    -- always try to search only covering textobject and explicitly ask to search
-    -- for next (`an`/`in`) or last (`al`/`il`).
-    -- Try this. If you don't like it - delete next line and this comment.
+    -- 'mini.ai' はデフォルトでほぼ組み込みの検索動作を模倣します: 最初にカーソルを
+    -- カバーするテキストオブジェクトを見つけようとし、次に右側を見つけようとします。
+    -- これはほとんどの場合機能しますが、混乱する場合もあります。常にカバーする
+    -- テキストオブジェクトのみを検索し、次（`an`/`in`）または最後（`al`/`il`）を
+    -- 明示的に検索するように要求する方がより堅牢です。
+    -- これを試してください。気に入らない場合は次の行とこのコメントを削除してください。
     search_method = 'cover',
   })
 end)
 
--- Align text interactively. Example usage:
--- - `gaip,` - `ga` (align operator) *i*nside *p*aragraph by comma
--- - `gAip` - start interactive alignment on the paragraph. Choose how to
---   split, justify, and merge string parts. Press `<CR>` to make it permanent,
---   press `<Esc>` to go back to initial state.
+-- テキストを対話的に整列します。使用例:
+-- - `gaip,` - `ga`（整列オペレーター）を段落内でカンマによって実行
+-- - `gAip` - 段落で対話的な整列を開始。文字列部分を分割、配置、マージする方法を選択。
+--   `<CR>` を押すと永続化し、`<Esc>` を押すと初期状態に戻ります。
 --
--- See also:
--- - `:h MiniAlign-example` - hands-on list of examples to practice aligning
--- - `:h MiniAlign.gen_step` - list of support step customizations
--- - `:h MiniAlign-algorithm` - how alignment is done on algorithmic level
+-- 参照:
+-- - `:h MiniAlign-example` - 整列を練習するための実践的な例のリスト
+-- - `:h MiniAlign.gen_step` - サポートされるステップカスタマイズのリスト
+-- - `:h MiniAlign-algorithm` - アルゴリズムレベルで整列がどのように行われるか
 later(function() require('mini.align').setup() end)
 
--- Animate common Neovim actions. Like cursor movement, scroll, window resize,
--- window open, window close. Animations are done based on Neovim events and
--- don't require custom mappings.
+-- 一般的なNeovimアクションをアニメーション化します。カーソル移動、スクロール、ウィンドウ
+-- リサイズ、ウィンドウを開く、ウィンドウを閉じるなど。アニメーションはNeovimイベントに
+-- 基づいて行われ、カスタムマッピングは必要ありません。
 --
--- It is not enabled by default because its effects are a matter of taste.
--- Also scroll and resize have some unwanted side effects (see `:h mini.animate`).
--- Uncomment next line (use `gcc`) to enable.
+-- その効果は好みの問題であるため、デフォルトでは有効になっていません。
+-- また、スクロールとリサイズにはいくつかの望ましくない副作用があります (`:h mini.animate` を参照)。
+-- 有効にするには次の行のコメントを解除してください（`gcc` を使用）。
 -- later(function() require('mini.animate').setup() end)
 
--- Go forward/backward with square brackets. Implements consistent sets of mappings
--- for selected targets (like buffers, diagnostic, quickfix list entries, etc.).
--- Example usage:
--- - `]b` - go to next buffer
--- - `[j` - go to previous jump inside current buffer
--- - `[Q` - go to first entry of quickfix list
--- - `]X` - go to last conflict marker in a buffer
+-- 角括弧で前/後に移動します。選択されたターゲット（バッファ、診断、quickfixリスト
+-- エントリなど）に対して一貫したマッピングのセットを実装します。使用例:
+-- - `]b` - 次のバッファに移動
+-- - `[j` - 現在のバッファ内の前のジャンプに移動
+-- - `[Q` - quickfixリストの最初のエントリに移動
+-- - `]X` - バッファ内の最後のコンフリクトマーカーに移動
 --
--- See also:
--- - `:h MiniBracketed` - overall mapping design and list of targets
+-- 参照:
+-- - `:h MiniBracketed` - 全体的なマッピング設計とターゲットのリスト
 later(function() require('mini.bracketed').setup() end)
 
--- Remove buffers. Opened files occupy space in tabline and buffer picker.
--- When not needed, they can be removed. Example usage:
--- - `<Leader>bw` - completely wipeout current buffer (see `:h :bwipeout`)
--- - `<Leader>bW` - completely wipeout current buffer even if it has changes
--- - `<Leader>bd` - delete current buffer (see `:h :bdelete`)
+-- バッファを削除します。開いたファイルはタブラインとバッファピッカーでスペースを占有します。
+-- 不要になったら削除できます。使用例:
+-- - `<Leader>bw` - 現在のバッファを完全にワイプアウト（`:h :bwipeout` を参照）
+-- - `<Leader>bW` - 変更があっても現在のバッファを完全にワイプアウト
+-- - `<Leader>bd` - 現在のバッファを削除（`:h :bdelete` を参照）
 later(function() require('mini.bufremove').setup() end)
 
--- Show next key clues in a bottom right window. Requires explicit opt-in for
--- keys that act as clue trigger. Example usage:
--- - Press `<Leader>` and wait for 1 second. A window with information about
---   next available keys should appear.
--- - Press one of the listed keys. Window updates immediately to show information
---   about new next available keys. You can press `<BS>` to go back in key sequence.
--- - Press keys until they resolve into some mapping.
+-- 次のキーヒントを右下のウィンドウに表示します。ヒントトリガーとして機能するキーには
+-- 明示的なオプトインが必要です。使用例:
+-- - `<Leader>` を押して1秒待ちます。次の利用可能なキーに関する情報を含むウィンドウが表示されます。
+-- - リストされているキーの1つを押します。ウィンドウは即座に更新され、新しい次の利用可能な
+--   キーに関する情報が表示されます。`<BS>` を押してキーシーケンスを戻ることができます。
+-- - キーがマッピングに解決されるまでキーを押します。
 --
--- Note: it is designed to work in buffers for normal files. It doesn't work in
--- special buffers (like for 'mini.starter' or 'mini.files') to not conflict
--- with its local mappings.
+-- 注意: これは通常のファイル用のバッファで動作するように設計されています。
+-- ローカルマッピングと競合しないように、特別なバッファ（'mini.starter' や 'mini.files' など）では
+-- 動作しません。
 --
--- See also:
--- - `:h MiniClue-examples` - examples of common setups
--- - `:h MiniClue.ensure_buf_triggers()` - use it to enable triggers in buffer
--- - `:h MiniClue.set_mapping_desc()` - change mapping description not from config
+-- 参照:
+-- - `:h MiniClue-examples` - 一般的なセットアップの例
+-- - `:h MiniClue.ensure_buf_triggers()` - バッファでトリガーを有効にするために使用
+-- - `:h MiniClue.set_mapping_desc()` - 設定からではなくマッピングの説明を変更
 later(function()
   local miniclue = require('mini.clue')
   -- stylua: ignore
   miniclue.setup({
-    -- Define which clues to show. By default shows only clues for custom mappings
-    -- (uses `desc` field from the mapping; takes precedence over custom clue).
+    -- 表示するヒントを定義。デフォルトではカスタムマッピングのヒントのみを表示
+    -- （マッピングの `desc` フィールドを使用; カスタムヒントよりも優先されます）。
     clues = {
-      -- This is defined in 'plugin/20_keymaps.lua' with Leader group descriptions
+      -- これは 'plugin/20_keymaps.lua' でLeaderグループの説明とともに定義されています
       Config.leader_group_clues,
       miniclue.gen_clues.builtin_completion(),
       miniclue.gen_clues.g(),
       miniclue.gen_clues.marks(),
       miniclue.gen_clues.registers(),
       miniclue.gen_clues.square_brackets(),
-      -- This creates a submode for window resize mappings. Try the following:
-      -- - Press `<C-w>s` to make a window split.
-      -- - Press `<C-w>+` to increase height. Clue window still shows clues as if
-      --   `<C-w>` is pressed again. Keep pressing just `+` to increase height.
-      --   Try pressing `-` to decrease height.
-      -- - Stop submode either by `<Esc>` or by any key that is not in submode.
+      -- これはウィンドウリサイズマッピングのサブモードを作成します。次を試してください:
+      -- - `<C-w>s` を押してウィンドウを分割します。
+      -- - `<C-w>+` を押して高さを増やします。ヒントウィンドウは `<C-w>` が再び
+      --   押されたかのようにヒントを表示し続けます。`+` だけを押し続けて高さを増やします。
+      --   `-` を押して高さを減らすことを試してください。
+      -- - `<Esc>` またはサブモードにないキーでサブモードを停止します。
       miniclue.gen_clues.windows({ submode_resize = true }),
       miniclue.gen_clues.z(),
     },
-    -- Explicitly opt-in for set of common keys to trigger clue window
+    -- ヒントウィンドウをトリガーする一般的なキーのセットに明示的にオプトイン
     triggers = {
-      { mode = { 'n', 'x' }, keys = '<Leader>' }, -- Leader triggers
+      { mode = { 'n', 'x' }, keys = '<Leader>' }, -- Leaderトリガー
       { mode =   'n',        keys = '\\' },       -- mini.basics
       { mode = { 'n', 'x' }, keys = '[' },        -- mini.bracketed
       { mode = { 'n', 'x' }, keys = ']' },
-      { mode =   'i',        keys = '<C-x>' },    -- Built-in completion
-      { mode = { 'n', 'x' }, keys = 'g' },        -- `g` key
-      { mode = { 'n', 'x' }, keys = "'" },        -- Marks
+      { mode =   'i',        keys = '<C-x>' },    -- 組み込み補完
+      { mode = { 'n', 'x' }, keys = 'g' },        -- `g` キー
+      { mode = { 'n', 'x' }, keys = "'" },        -- マーク
       { mode = { 'n', 'x' }, keys = '`' },
-      { mode = { 'n', 'x' }, keys = '"' },        -- Registers
+      { mode = { 'n', 'x' }, keys = '"' },        -- レジスタ
       { mode = { 'i', 'c' }, keys = '<C-r>' },
-      { mode =   'n',        keys = '<C-w>' },    -- Window commands
-      { mode = { 'n', 'x' }, keys = 's' },        -- `s` key (mini.surround, etc.)
-      { mode = { 'n', 'x' }, keys = 'z' },        -- `z` key
+      { mode =   'n',        keys = '<C-w>' },    -- ウィンドウコマンド
+      { mode = { 'n', 'x' }, keys = 's' },        -- `s` キー (mini.surround など)
+      { mode = { 'n', 'x' }, keys = 'z' },        -- `z` キー
     },
   })
 end)
 
--- Command line tweaks. Improves command line editing with:
--- - Autocompletion. Basically an automated `:h cmdline-completion`.
--- - Autocorrection of words as-you-type. Like `:W`->`:w`, `:lau`->`:lua`, etc.
--- - Autopeek command range (like line number at the start) as-you-type.
+-- コマンドラインの調整。コマンドライン編集を次のように改善します:
+-- - 自動補完。基本的には自動化された `:h cmdline-completion`
+-- - 入力時の単語の自動修正。`:W`->`:w`、`:lau`->`:lua` など
+-- - 入力時のコマンド範囲（開始時の行番号など）の自動プレビュー
 later(function() require('mini.cmdline').setup() end)
 
 -- Tweak and save any color scheme. Contains utility functions to work with

@@ -2,32 +2,32 @@
 -- │ LSP config example │
 -- └────────────────────┘
 --
--- This file contains configuration of 'lua_ls' language server.
--- Source: https://github.com/LuaLS/lua-language-server
+-- このファイルには 'lua_ls' 言語サーバーの設定が含まれています。
+-- ソース: https://github.com/LuaLS/lua-language-server
 --
--- It is used by `:h vim.lsp.enable()` and `:h vim.lsp.config()`.
--- See `:h vim.lsp.Config` and `:h vim.lsp.ClientConfig` for all available fields.
+-- これは `:h vim.lsp.enable()` と `:h vim.lsp.config()` で使用されます。
+-- 利用可能なすべてのフィールドについては `:h vim.lsp.Config` と `:h vim.lsp.ClientConfig` を参照してください。
 --
--- This config is designed for Lua's activity around Neovim. It provides only
--- basic config and can be further improved.
+-- この設定はNeovim周辺のLuaアクティビティ向けに設計されています。基本的な設定のみを提供し、
+-- さらに改善することができます。
 return {
   on_attach = function(client, buf_id)
-    -- Reduce very long list of triggers for better 'mini.completion' experience
+    -- より良い 'mini.completion' 体験のために非常に長いトリガーリストを削減
     client.server_capabilities.completionProvider.triggerCharacters =
       { '.', ':', '#', '(' }
 
-    -- Use this function to define buffer-local mappings and behavior that depend
-    -- on attached client or only makes sense if there is language server attached.
+    -- この関数を使用して、アタッチされたクライアントに依存するバッファローカルマッピングと
+    -- 動作、または言語サーバーがアタッチされている場合にのみ意味があるものを定義します。
   end,
-  -- LuaLS Structure of these settings comes from LuaLS, not Neovim
+  -- LuaLS これらの設定の構造はNeovimではなくLuaLSから来ています
   settings = {
     Lua = {
-      -- Define runtime properties. Use 'LuaJIT', as it is built into Neovim.
+      -- ランタイムプロパティを定義。Neovimに組み込まれているため 'LuaJIT' を使用。
       runtime = { version = 'LuaJIT', path = vim.split(package.path, ';') },
       workspace = {
-        -- Don't analyze code from submodules
+        -- サブモジュールからのコードを解析しない
         ignoreSubmodules = true,
-        -- Add Neovim's methods for easier code writing
+        -- より簡単なコード記述のためにNeovimのメソッドを追加
         library = { vim.env.VIMRUNTIME },
       },
     },
