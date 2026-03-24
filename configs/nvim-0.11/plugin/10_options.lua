@@ -10,6 +10,10 @@
 --
 -- オプションの値はバッファまたはウィンドウごとにカスタマイズできます。
 -- 一般的な例については 'after/ftplugin/' を参照してください。
+--
+-- 注意:
+-- - 一部のオプション（`:h 'exrc'` など）はこのファイルが読み込まれる前に設定する必要があります。
+--   'init.lua' ファイルの末尾で直接設定してください。
 
 -- stylua: ignore start
 -- 次の部分 (`-- stylua: ignore end` まで) は読みやすさのために手動で整列されています。
@@ -90,7 +94,7 @@ vim.o.completeopt = 'menuone,noselect,fuzzy,nosort' -- カスタム動作を使�
 -- コメントを自動折り返ししない、'o' を押した後にコメントリーダーを挿入しない。
 -- ファイルタイププラグインからのこれらの変更を常に上書きするために `FileType` で実行。
 local f = function() vim.cmd('setlocal formatoptions-=c formatoptions-=o') end
-_G.Config.new_autocmd('FileType', nil, f, "Proper 'formatoptions'")
+Config.new_autocmd('FileType', nil, f, "Proper 'formatoptions'")
 
 -- 'mini.basics' によって作成される他の自動コマンドがあります。'plugin/30_mini.lua' を参照してください。
 

@@ -10,7 +10,7 @@
 
 -- 2段階でプラグインをインストール/追加するための簡潔なヘルパーを作成
 local add, later = MiniDeps.add, MiniDeps.later
-local now_if_args = _G.Config.now_if_args
+local now_if_args = Config.now_if_args
 
 -- Tree-sitter ================================================================
 
@@ -43,12 +43,7 @@ now_if_args(function()
     -- プラグイン更新後にtree-sitterパーサーを更新
     hooks = { post_checkout = function() vim.cmd('TSUpdate') end },
   })
-  add({
-    source = 'nvim-treesitter/nvim-treesitter-textobjects',
-    -- `master` ブランチが凍結されているため `main` ブランチを使用（まだデフォルト）
-    -- これは 'nvim-treesitter' の `main` ブランチとの互換性のために必要
-    checkout = 'main',
-  })
+  add('nvim-treesitter/nvim-treesitter-textobjects')
 
   -- パーサーがインストールされ自動で有効化される言語を定義
   -- これを変更した後、必要なパーサーをインストールするためにNeovimを一度再起動してください。
@@ -78,7 +73,7 @@ now_if_args(function()
     end
   end
   local ts_start = function(ev) vim.treesitter.start(ev.buf) end
-  _G.Config.new_autocmd('FileType', filetypes, ts_start, 'Start tree-sitter')
+  Config.new_autocmd('FileType', filetypes, ts_start, 'Start tree-sitter')
 end)
 
 -- 言語サーバー ===============================================================

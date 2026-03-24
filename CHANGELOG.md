@@ -1,3 +1,25 @@
+## 2026-02-17
+
+- Update 'mini.files' setup to use `now_if_args` instead of `later`. Otherwise it doesn't override `netrw` as the default explorer when starting Neovim like `nvim .`.
+
+## 2026-02-15
+
+- Update 'nvim-treesitter/nvim-treesitter-textobjects' plugin to not explicitly use `main` branch as it is now the default.
+
+- Add new reference configs:
+    - `nvim-0.10` - for Neovim>=0.10
+    - `nvim-0.12` - for Neovim>=0.12.
+
+## 2026-02-10
+
+- Update using global variable for config as just `Config` and not `_G.Config`. This is more concise and makes it more consistent with how `MiniXxx` variables are used.
+
+## 2026-01-29
+
+- Update 'mini.completion' setup to use `now_if_args` instead of `later`. Otherwise it doesn't set proper omnifunc for files opened during startup (because necessary `LspAttach` events are already triggered).
+
+- Move setting up 'mini.nvim' modules that need `now_if_args` in a separate "Step one or two" section.
+
 ## 2026-01-13
 
 - Improve 'stevearc/conform.nvim' setup:
@@ -31,7 +53,7 @@
 
 ## 2025-10-16
 
-- Move `now_if_args` startup helper to 'init.lua' as `_G.Config.now_if_args` to be directly usable from other config files.
+- Move `now_if_args` startup helper to 'init.lua' as `Config.now_if_args` to be directly usable from other config files.
 
 - Enable 'mini.misc' behind `now_if_args` instead of `now`. Otherwise `setup_auto_root()` and `setup_restore_cursor()` don't work on initial file(s) if Neovim is started as `nvim -- path/to/file`.
 

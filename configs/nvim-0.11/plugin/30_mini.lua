@@ -25,7 +25,7 @@
 --   Neovimが `nvim -- path/to/file` として起動された場合にのみ必要な場合があります。
 -- - それ以外はすべて `later()` で最初の描画まで遅延されます。
 local now, later = MiniDeps.now, MiniDeps.later
-local now_if_args = _G.Config.now_if_args
+local now_if_args = Config.now_if_args
 
 -- ステップ1 =================================================================
 -- 'miniwinter' カラースキームを有効化。これは 'mini.nvim' に付属し、'mini.hues' を使用します。
@@ -379,7 +379,7 @@ later(function()
   local on_attach = function(ev)
     vim.bo[ev.buf].omnifunc = 'v:lua.MiniCompletion.completefunc_lsp'
   end
-  _G.Config.new_autocmd('LspAttach', nil, on_attach, "Set 'omnifunc'")
+  Config.new_autocmd('LspAttach', nil, on_attach, "Set 'omnifunc'")
 
   -- Neovimが 'mini.completion' を通じて特定の補完およびシグネチャ機能を
   -- サポートするようになったことをサーバーに通知。
@@ -451,7 +451,7 @@ later(function()
     MiniFiles.set_bookmark('p', minideps_plugins, { desc = 'Plugins' })
     MiniFiles.set_bookmark('w', vim.fn.getcwd, { desc = 'Working directory' })
   end
-  _G.Config.new_autocmd('User', 'MiniFilesExplorerOpen', add_marks, 'Add bookmarks')
+  Config.new_autocmd('User', 'MiniFilesExplorerOpen', add_marks, 'Add bookmarks')
 end)
 
 -- Neovimの状態に基づいたより直接的なGitアクションのためのGit統合。
