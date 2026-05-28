@@ -1,3 +1,27 @@
+## 2026-04-07
+
+- Update `Config.on_packchanged` helper to pass plugin data to the callback. This makes it easier to use more universal callbacks in `vim.pack` hooks.
+
+- Improve session (`<Leader>s` prefix) mappings:
+
+    - Use `vim.ui.input()` when creating new session with `<Leader>sn`.
+
+    - Add `<leader>sR` to restart Neovim while preserving current session. Uses `MiniSessions.restart()`, requires Neovim>=0.12.
+
+## 2026-04-02
+
+- Add a note in `nvim-0.11` config about Neovim 0.11 not being the latest stable release.
+
+## 2026-03-31
+
+- Remove the note from `nvim-0.12` config about unstable status of Neovim 0.12.
+
+- Add new reference config `nvim-0.13` for Neovim>=0.13 (currently under development).
+
+## 2026-03-27
+
+- Add a `<Leader>ll` mapping for running codelens.
+
 ## 2026-02-17
 
 - Update 'mini.files' setup to use `now_if_args` instead of `later`. Otherwise it doesn't override `netrw` as the default explorer when starting Neovim like `nvim .`.

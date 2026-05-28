@@ -41,7 +41,9 @@ vim.o.cursorline     = true       -- 現在行のハイライトを有効化
 vim.o.linebreak      = true       -- 'breakat' で行を折り返す（'wrap' 設定時）
 vim.o.list           = true       -- 便利なテキストインジケーターを表示
 vim.o.number         = true       -- 行番号を表示
+vim.o.pumborder      = 'single'   -- ポップアップメニューにボーダーを使用
 vim.o.pumheight      = 10         -- ポップアップメニューを小さくする
+vim.o.pummaxwidth    = 100        -- ポップアップメニューを広くしすぎない
 vim.o.ruler          = false      -- カーソル座標を表示しない
 vim.o.shortmess      = 'CFOSWaco' -- 一部の組み込み補完メッセージを無効化
 vim.o.showmode       = false      -- コマンドラインにモードを表示しない
@@ -49,6 +51,7 @@ vim.o.signcolumn     = 'yes'      -- signcolumnを常に表示（ちらつき軽
 vim.o.splitbelow     = true       -- 水平分割は下に配置
 vim.o.splitkeep      = 'screen'   -- ウィンドウ分割時のスクロールを軽減
 vim.o.splitright     = true       -- 垂直分割は右に配置
+vim.o.winborder      = 'single'   -- フローティングウィンドウにボーダーを使用
 vim.o.wrap           = false      -- 行を視覚的に折り返さない（\w で切り替え）
 
 vim.o.cursorlineopt  = 'screenline,number' -- スクリーン行ごとにカーソル行を表示
@@ -85,8 +88,9 @@ vim.o.iskeyword = '@,48-57,_,192-255,-' -- ダッシュを `word` テキスト�
 vim.o.formatlistpat = [[^\s*[0-9\-\+\*]\+[\.\)]*\s\+]]
 
 -- 組み込み補完
-vim.o.complete    = '.,w,b,kspell'     -- 使用するソースを減らす
-vim.o.completeopt = 'menuone,noselect' -- カスタム動作を使用
+vim.o.complete        = '.,w,b,kspell'                  -- 使用するソースを減らす
+vim.o.completeopt     = 'menuone,noselect,fuzzy,nosort' -- カスタム動作を使用
+vim.o.completetimeout = 100                             -- ソースの遅延を制限
 
 -- 自動コマンド ===============================================================
 
@@ -121,5 +125,5 @@ local diagnostic_opts = {
 }
 
 -- 起動時に `vim.diagnostic` をソースしないために `later()` を使用
-MiniDeps.later(function() vim.diagnostic.config(diagnostic_opts) end)
+Config.later(function() vim.diagnostic.config(diagnostic_opts) end)
 -- stylua: ignore end

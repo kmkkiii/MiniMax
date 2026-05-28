@@ -189,6 +189,7 @@ nmap_leader('ld', '<Cmd>lua vim.diagnostic.open_float()<CR>',   'Diagnostic popu
 nmap_leader('lf', '<Cmd>lua require("conform").format()<CR>',   'Format')
 nmap_leader('li', '<Cmd>lua vim.lsp.buf.implementation()<CR>',  'Implementation')
 nmap_leader('lh', '<Cmd>lua vim.lsp.buf.hover()<CR>',           'Hover')
+nmap_leader('ll', '<Cmd>lua vim.lsp.codelens.run()<CR>',        'Lens')
 nmap_leader('lr', '<Cmd>lua vim.lsp.buf.rename()<CR>',          'Rename')
 nmap_leader('lR', '<Cmd>lua vim.lsp.buf.references()<CR>',      'References')
 nmap_leader('ls', '<Cmd>lua vim.lsp.buf.definition()<CR>',      'Source definition')
@@ -215,7 +216,7 @@ nmap_leader('oz', '<Cmd>lua MiniMisc.zoom()<CR>',          'Zoom toggle')
 -- - `<Leader>sn` - 新しいセッションを開始
 -- - `<Leader>sr` - 以前に開始したセッションを読み込み
 -- - `<Leader>sd` - 以前に開始したセッションを削除
-local session_new = 'MiniSessions.write(vim.fn.input("Session name: "))'
+local session_new = 'vim.ui.input({ prompt = "セッション名: " }, MiniSessions.write)'
 
 nmap_leader('sd', '<Cmd>lua MiniSessions.select("delete")<CR>', 'Delete')
 nmap_leader('sn', '<Cmd>lua ' .. session_new .. '<CR>',         'New')

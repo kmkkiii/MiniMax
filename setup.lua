@@ -3,6 +3,7 @@ local version
 if vim.fn.has('nvim-0.10') == 1 then version = 'nvim-0.10' end
 if vim.fn.has('nvim-0.11') == 1 then version = 'nvim-0.11' end
 if vim.fn.has('nvim-0.12') == 1 then version = 'nvim-0.12' end
+if vim.fn.has('nvim-0.13') == 1 then version = 'nvim-0.13' end
 if version == nil then
   print('There is no available MiniMax version. Try updating Neovim.\n')
   return

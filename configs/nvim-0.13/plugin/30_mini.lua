@@ -24,8 +24,7 @@
 -- - ステップ1は `now()` で最初の描画に必要なすべてを有効化します。
 --   Neovimが `nvim -- path/to/file` として起動された場合にのみ必要な場合があります。
 -- - それ以外はすべて `later()` で最初の描画まで遅延されます。
-local now, later = MiniDeps.now, MiniDeps.later
-local now_if_args = Config.now_if_args
+local now, now_if_args, later = Config.now, Config.now_if_args, Config.later
 
 -- ステップ1 =================================================================
 -- 'miniwinter' カラースキームを有効化。これは 'mini.nvim' に付属し、'mini.hues' を使用します。
@@ -181,6 +180,9 @@ now_if_args(function()
   end
   Config.new_autocmd('LspAttach', nil, on_attach, "Set 'omnifunc'")
 
+  -- Neovimが 'mini.completion' を通じて特定の補完およびシグネチャ機能を
+  -- サポートするようになったことをサーバーに通知。
+  vim.lsp.config('*', { capabilities = MiniCompletion.get_lsp_capabilities() })
 end)
 
 -- ファイルシステムのナビゲートと操作
@@ -221,8 +223,8 @@ now_if_args(function()
   -- - `g?` で利用可能なブックマークを表示
   local add_marks = function()
     MiniFiles.set_bookmark('c', vim.fn.stdpath('config'), { desc = 'Config' })
-    local minideps_plugins = vim.fn.stdpath('data') .. '/site/pack/deps/opt'
-    MiniFiles.set_bookmark('p', minideps_plugins, { desc = 'Plugins' })
+    local vimpack_plugins = vim.fn.stdpath('data') .. '/site/pack/core/opt'
+    MiniFiles.set_bookmark('p', vimpack_plugins, { desc = 'Plugins' })
     MiniFiles.set_bookmark('w', vim.fn.getcwd, { desc = 'Working directory' })
   end
   Config.new_autocmd('User', 'MiniFilesExplorerOpen', add_marks, 'Add bookmarks')

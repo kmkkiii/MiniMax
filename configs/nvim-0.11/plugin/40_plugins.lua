@@ -42,8 +42,14 @@ now_if_args(function()
     source = 'nvim-treesitter/nvim-treesitter',
     -- プラグイン更新後にtree-sitterパーサーを更新
     hooks = { post_checkout = function() vim.cmd('TSUpdate') end },
+    -- プラグインが Neovim=0.11 サポートを落とす直前のコミットに固定
+    checkout = '90cd6580e720caedacb91fdd587b747a6e77d61f',
   })
-  add('nvim-treesitter/nvim-treesitter-textobjects')
+  add({
+    source = 'nvim-treesitter/nvim-treesitter-textobjects',
+    -- 'nvim-treesitter' のコミットに対応するコミットに固定
+    checkout = '93d60a475f0b08a8eceb99255863977d3a25f310',
+  })
 
   -- パーサーがインストールされ自動で有効化される言語を定義
   -- これを変更した後、必要なパーサーをインストールするためにNeovimを一度再起動してください。
@@ -91,6 +97,9 @@ end)
 -- 'neovim/nvim-lspconfig' プラグイン内に収集しています。
 --
 -- 起動後にファイル（'mini.starter' ではなく）が表示される場合は、今すぐ追加します。
+--
+-- トラブルシューティング:
+-- - 潜在的な問題を確認するには `:checkhealth vim.lsp` を実行してください。
 now_if_args(function()
   add('neovim/nvim-lspconfig')
 
