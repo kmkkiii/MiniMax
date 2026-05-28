@@ -1,14 +1,19 @@
-## MiniMax 設定
+## MiniMax 参照設定
+
+初期設定の生成時には、Neovim のバージョンに基づいて最も適した設定が選択されます。
 
 利用可能:
 
+- [`nvim-0.10`](nvim-0.10) - Neovim>=0.10用
 - [`nvim-0.11`](nvim-0.11) - Neovim>=0.11用
+- [`nvim-0.12`](nvim-0.12) - Neovim>=0.12用
+- [`nvim-0.13`](nvim-0.13) - Neovim>=0.13用（現在開発中）
 
-計画中（'nvim-0.11'の公開テスト後）:
+選択された設定間の差分:
 
-- `nvim-0.9` - Neovim>=0.9用
-- `nvim-0.10` - Neovim>=0.10用
-- `nvim-0.12` - Neovim>=0.12用
+- [`nvim-0.10` と `nvim-0.11` の差分](https://nvim-mini.org/MiniMax/configs/diffs/nvim-0.10_nvim-0.11)
+- [`nvim-0.11` と `nvim-0.12` の差分](https://nvim-mini.org/MiniMax/configs/diffs/nvim-0.11_nvim-0.12)
+- [`nvim-0.12` と `nvim-0.13` の差分](https://nvim-mini.org/MiniMax/configs/diffs/nvim-0.12_nvim-0.13)
 
 ### 構造
 
