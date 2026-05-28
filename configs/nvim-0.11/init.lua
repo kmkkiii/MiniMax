@@ -1,52 +1,52 @@
--- WARNING: NEOVIM 0.11 IS NOT THE LATEST STABLE RELEASE.
--- IT MEANS THAT THERE IS A CHANCE SOME PLUGINS MIGHT DROP SUPPORTING IT.
--- IT IS HIGHLY RECOMMENDED TO UPDATE TO THE LATEST STABLE VERSION.
+-- 警告: NEOVIM 0.11 は最新の安定版ではありません。
+-- そのため、一部のプラグインがサポートを打ち切る可能性があります。
+-- 最新の安定版に更新することを強く推奨します。
 
 -- ┌────────────────────┐
 -- │ Welcome to MiniMax │
 -- └────────────────────┘
 --
--- This is a config designed to mostly use MINI. It provides out of the box
--- a stable, polished, and feature rich Neovim experience. Its structure:
+-- これは主にMINIを使用するように設計された設定です。すぐに使える
+-- 安定した、洗練された、機能豊富なNeovim体験を提供します。構成:
 --
--- ├ init.lua          Initial (this) file executed during startup
--- ├ plugin/           Files automatically sourced during startup
--- ├── 10_options.lua  Built-in Neovim behavior
--- ├── 20_keymaps.lua  Custom mappings
--- ├── 30_mini.lua     MINI configuration
--- ├── 40_plugins.lua  Plugins outside of MINI
--- ├ snippets/         User defined snippets (has demo file)
--- ├ after/            Files to override behavior added by plugins
--- ├── ftplugin/       Files for filetype behavior (has demo file)
--- ├── lsp/            Language server configurations (has demo file)
--- ├── snippets/       Higher priority snippet files (has demo file)
+-- ├ init.lua          起動時に実行される初期ファイル（このファイル）
+-- ├ plugin/           起動時に自動的に読み込まれるファイル群
+-- ├── 10_options.lua  Neovimの組み込み動作設定
+-- ├── 20_keymaps.lua  カスタムキーマッピング
+-- ├── 30_mini.lua     MINI設定
+-- ├── 40_plugins.lua  MINI以外のプラグイン
+-- ├ snippets/         ユーザー定義スニペット（デモファイル有り）
+-- ├ after/            プラグインによる動作を上書きするファイル群
+-- ├── ftplugin/       ファイルタイプ固有の動作設定（デモファイル有り）
+-- ├── lsp/            言語サーバー設定（デモファイル有り）
+-- ├── snippets/       より高い優先度のスニペットファイル（デモファイル有り）
 --
--- Config files are meant to be read, preferably inside a Neovim instance running
--- this config and opened at its root. This will help you better understand your
--- setup. Start with this file. Any order is possible, prefer the one listed above.
--- Ways of navigating your config:
--- - `<Space>` + `e` + (one of) `iokmp` - edit 'init.lua' or 'plugin/' files.
--- - Inside config directory: `<Space>ff` (picker) or `<Space>ed` (explorer)
--- - Navigate existing buffers with `[b`, `]b`, or `<Space>fb`.
+-- 設定ファイルは読まれることを想定しており、できればこの設定を実行している
+-- Neovimインスタンス内で、ルートディレクトリで開いて読むことを推奨します。これにより
+-- セットアップをより深く理解できます。このファイルから始めてください。どの順序でも
+-- 可能ですが、上記の順序を推奨します。設定をナビゲートする方法:
+-- - `<Space>` + `e` + (いずれか) `iokmp` - 'init.lua' または 'plugin/' ファイルを編集
+-- - 設定ディレクトリ内で: `<Space>ff` (ピッカー) または `<Space>ed` (エクスプローラー)
+-- - 既存のバッファ間の移動: `[b`、`]b`、または `<Space>fb`
 --
--- Config files are also meant to be customized. Initially it is a baseline of
--- a working config based on MINI. Modify it to make it yours. Some approaches:
--- - Modify already existing files in a way that keeps them consistent.
--- - Add new files in a way that keeps config consistent.
---   Usually inside 'plugin/' or 'after/'.
+-- 設定ファイルはカスタマイズされることも想定しています。最初はMINIベースの
+-- 動作する設定のベースラインです。あなた好みに変更してください。いくつかのアプローチ:
+-- - 一貫性を保ちながら既存ファイルを変更する
+-- - 設定の一貫性を保ちながら新しいファイルを追加する
+--   通常は 'plugin/' または 'after/' 内に追加
 --
--- Documentation comments like this can be found throughout the config.
--- Common conventions:
+-- このようなドキュメントコメントは、設定全体に渡って見られます。
+-- 一般的な規約:
 --
--- - See `:h key-notation` for key notation used.
--- - `:h xxx` means "documentation of helptag xxx". Either type text directly
---   followed by Enter or type `<Space>fh` to open a helptag fuzzy picker.
--- - "Type `<Space>fh`" means "press <Space>, followed by f, followed by h".
---   Unless said otherwise, it assumes that Normal mode is current.
--- - "See 'path/to/file'" means see open file at described path and read it.
--- - `:SomeCommand ...` or `:lua ...` means execute mentioned command.
+-- - 使用されるキー表記については `:h key-notation` を参照
+-- - `:h xxx` は "ヘルプタグ xxx のドキュメント" を意味します。テキストを直接入力して
+--   Enterを押すか、`<Space>fh` でヘルプタグのファジーピッカーを開けます
+-- - "`<Space>fh` を入力" は "<Space> を押し、続いて f、続いて h を押す" を意味します
+--   特に断りがない限り、Normal mode であることを想定しています
+-- - "'path/to/file' を参照" は、記述されたパスでファイルを開いて読むことを意味します
+-- - `:SomeCommand ...` または `:lua ...` は、記述されたコマンドを実行することを意味します
 
--- Bootstrap 'mini.nvim' manually in a way that it gets managed by 'mini.deps'
+-- 'mini.deps' によって管理されるように 'mini.nvim' を手動でブートストラップ
 local mini_path = vim.fn.stdpath('data') .. '/site/pack/deps/start/mini.nvim'
 if not vim.loop.fs_stat(mini_path) then
   vim.cmd('echo "Installing `mini.nvim`" | redraw')
@@ -57,27 +57,27 @@ if not vim.loop.fs_stat(mini_path) then
   vim.cmd('echo "Installed `mini.nvim`" | redraw')
 end
 
--- Plugin manager. Set up immediately for `now()`/`later()` helpers.
--- Example usage:
--- - `MiniDeps.add('...')` - use inside config to add a plugin
--- - `:DepsUpdate` - update all plugins
--- - `:DepsSnapSave` - save a snapshot of currently active plugins
+-- プラグインマネージャー。`now()`/`later()` ヘルパーのために即座にセットアップ。
+-- 使用例:
+-- - `MiniDeps.add('...')` - 設定内でプラグインを追加
+-- - `:DepsUpdate` - すべてのプラグインを更新
+-- - `:DepsSnapSave` - 現在アクティブなプラグインのスナップショットを保存
 --
--- See also:
--- - `:h MiniDeps-overview` - how to use it
--- - `:h MiniDeps-commands` - all available commands
--- - 'plugin/30_mini.lua' - more details about 'mini.nvim' in general
+-- 参照:
+-- - `:h MiniDeps-overview` - 使用方法
+-- - `:h MiniDeps-commands` - 利用可能なすべてのコマンド
+-- - 'plugin/30_mini.lua' - 'mini.nvim' 全般についての詳細
 require('mini.deps').setup()
 
--- Define config table to be able to pass data between scripts
--- It is a global variable which can be use both as `_G.Config` and `Config`
+-- スクリプト間でデータを渡せるように設定テーブルを定義
+-- `_G.Config` と `Config` の両方として使用できるグローバル変数です
 _G.Config = {}
 
--- Define custom autocommand group and helper to create an autocommand.
--- Autocommands are Neovim's way to define actions that are executed on events
--- (like creating a buffer, setting an option, etc.).
+-- カスタム自動コマンドグループと、自動コマンドを作成するヘルパーを定義。
+-- 自動コマンドは、イベント発生時にアクションを実行するNeovimの仕組みです
+-- (バッファ作成、オプション設定など)。
 --
--- See also:
+-- 参照:
 -- - `:h autocommand`
 -- - `:h nvim_create_augroup()`
 -- - `:h nvim_create_autocmd()`
@@ -87,6 +87,6 @@ Config.new_autocmd = function(event, pattern, callback, desc)
   vim.api.nvim_create_autocmd(event, opts)
 end
 
--- Some plugins and 'mini.nvim' modules only need setup during startup if Neovim
--- is started like `nvim -- path/to/file`, otherwise delaying setup is fine
+-- 一部のプラグインと 'mini.nvim' モジュールは、Neovimが `nvim -- path/to/file` の
+-- ように起動された場合のみ起動時のセットアップが必要で、それ以外は遅延セットアップで問題ありません
 Config.now_if_args = vim.fn.argc(-1) > 0 and MiniDeps.now or MiniDeps.later

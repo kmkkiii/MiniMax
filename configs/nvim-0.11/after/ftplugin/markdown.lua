@@ -2,35 +2,35 @@
 -- │ Filetype config example │
 -- └─────────────────────────┘
 --
--- This is an example of a configuration that will apply only to a particular
--- filetype, which is the same as file's basename ('markdown' in this example;
--- which is for '*.md' files).
+-- これは特定のファイルタイプにのみ適用される設定の例で、ファイルのベース名と同じです
+-- （この例では 'markdown'; '*.md' ファイル用）。
 --
--- It can contain any code which will be usually executed when the file is opened
--- (strictly speaking, on every 'filetype' option value change to target value).
--- Usually it needs to define buffer/window local options and variables.
--- So instead of `vim.o` to set options, use `vim.bo` for buffer-local options and
--- `vim.cmd('setlocal ...')` for window-local options (currently more robust).
+-- ファイルが開かれたときに通常実行される任意のコードを含めることができます
+-- （厳密には、'filetype' オプション値がターゲット値に変更されるたびに）。
+-- 通常、バッファ/ウィンドウローカルのオプションと変数を定義する必要があります。
+-- したがって、オプションを設定するために `vim.o` の代わりに、バッファローカルオプションには
+-- `vim.bo` を、ウィンドウローカルオプションには `vim.cmd('setlocal ...')` を使用します
+-- （現在より堅牢）。
 --
--- This is also a good place to set buffer-local 'mini.nvim' variables.
--- See `:h mini.nvim-buffer-local-config` and `:h mini.nvim-disabling-recipes`.
+-- これはバッファローカルの 'mini.nvim' 変数を設定するのにも良い場所です。
+-- `:h mini.nvim-buffer-local-config` と `:h mini.nvim-disabling-recipes` を参照してください。
 
--- Enable spelling and wrap for window
+-- ウィンドウのスペルチェックと折り返しを有効化
 vim.cmd('setlocal spell wrap')
 
--- Fold with tree-sitter
+-- tree-sitterで折り畳み
 vim.cmd('setlocal foldmethod=expr foldexpr=v:lua.vim.treesitter.foldexpr()')
 
--- Disable built-in `gO` mapping in favor of 'mini.basics'
+-- 'mini.basics' を優先して組み込みの `gO` マッピングを無効化
 vim.keymap.del('n', 'gO', { buffer = 0 })
 
--- Set markdown-specific surrounding in 'mini.surround'
+-- 'mini.surround' でmarkdown固有の囲み文字を設定
 vim.b.minisurround_config = {
   custom_surroundings = {
-    -- Markdown link. Common usage:
-    -- `saiwL` + [type/paste link] + <CR> - add link
-    -- `sdL` - delete link
-    -- `srLL` + [type/paste link] + <CR> - replace link
+    -- Markdownリンク。一般的な使用法:
+    -- `saiwL` + [リンクを入力/ペースト] + <CR> - リンクを追加
+    -- `sdL` - リンクを削除
+    -- `srLL` + [リンクを入力/ペースト] + <CR> - リンクを置換
     L = {
       input = { '%[().-()%]%(.-%)' },
       output = function()
