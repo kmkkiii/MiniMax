@@ -87,33 +87,6 @@ now(function()
   later(MiniIcons.tweak_lsp_kind)
 end)
 
--- さまざまな小さいが便利な関数群。使用例:
--- - `<Leader>oz` - 現在のバッファの「ズーム」表示と通常表示を切り替え
--- - `<Leader>or` - ウィンドウを「編集可能な幅」にリサイズ
--- - `:lua put_text(vim.lsp.get_clients())` - 関数の出力を現在のバッファの
---   カーソル下に配置。詳細な探索に便利です。
--- - `:lua put(MiniMisc.stat_summary(MiniMisc.bench_time(f, 100)))` - 関数 `f` を
---   100回実行し、実行時間の統計サマリーをレポート
---
--- `nvim -- path/to/file` のように起動された場合に `setup_xxx()` が動作するように `now()` を使用
-now_if_args(function()
-  -- `:h MiniMisc.put()` と `:h MiniMisc.put_text()` を公開
-  require('mini.misc').setup()
-
-  -- 現在のファイルパスに基づいて現在の作業ディレクトリを変更。最初のルートマーカー
-  -- （'.git' または 'Makefile'）までファイルツリーを上に検索し、その親ディレクトリを
-  -- 現在のディレクトリとして設定します。
-  -- これは複数のプロジェクトのファイルを同時に扱う際に役立ちます。
-  MiniMisc.setup_auto_root()
-
-  -- ファイルを開く際に最後のカーソル位置を復元
-  MiniMisc.setup_restore_cursor()
-
-  -- Neovimインスタンスの周りの異なる可能性のあるカラーパディングを削除するために
-  -- ターミナルエミュレータの背景とNeovimの背景を同期
-  MiniMisc.setup_termbg_sync()
-end)
-
 -- 通知プロバイダー。あらゆる種類の通知を右上隅（デフォルト）に表示します。使用例:
 -- - `:h vim.notify()` - 通知を表示（自動的に非表示）
 -- - `<Leader>en` - 通知履歴を表示
@@ -153,6 +126,135 @@ now(function() require('mini.statusline').setup() end)
 -- タブライン。すべてのリストされたバッファを上部の行に表示するために `:h 'tabline'` を設定します。
 -- バッファは作成された順序で並べられます。`[b` と `]b` でナビゲートします。
 now(function() require('mini.tabline').setup() end)
+
+-- ステップ1または2 ============================================================
+-- Neovimが `nvim -- path/to/file` のように起動された場合は即座にロードし、それ以外は遅延。
+-- これにより起動時に開かれたファイルの正しい動作が保証されます。
+
+-- 補完とシグネチャヘルプ。非同期の「2段階」自動補完を実装します:
+-- - 補完をサポートするアタッチされたLSPサーバーに基づく
+-- - LSP候補がない場合のフォールバック（組み込みキーワード補完に基づく）
+--
+-- アタッチされたLSPでのInsert modeでの使用例:
+-- - LSPが認識すべきテキスト（変数名など）の入力を開始します。
+-- - 100ms後に候補を含むポップアップメニューが表示されます。
+-- - `<Tab>` / `<S-Tab>` を押してリストを下/上にナビゲートします。これらは 'mini.keymap'
+--   で設定されています。`<C-n>` / `<C-p>` も使用できます。
+-- - ナビゲーション中、右側に情報ウィンドウが表示され、LSPサーバーが候補について提供できる
+--   追加情報が表示されます。候補が100ms選択された後に表示されます。`<C-f>` / `<C-b>` を
+--   使用してスクロールできます。
+-- - エントリにナビゲートするとバッファテキストも変更されます。それで満足な場合は、
+--   その後入力を続けます。補完を完全に破棄するには、`<C-e>` を押します。
+-- - 特別なトリガー（通常は `(`）を押すと、現在の関数/メソッドのシグネチャを表示する
+--   ウィンドウが表示されます。入力すると更新され、現在アクティブなパラメーターが表示されます。
+--
+-- アタッチされたLSPなし、またはLSPがサポートしていない場所（コメントなど）での
+-- Insert modeでの使用例:
+-- - 現在のバッファまたは開いているバッファに存在する単語の入力を開始します。
+-- - 100ms後に候補を含むポップアップメニューが表示されます。
+-- - `<Tab>` / `<S-Tab>` または `<C-n>` / `<C-p>` でナビゲートします。これによりバッファ
+--   テキストも更新されます。選択に満足したら、入力を続けます。`<C-e>` で停止します。
+--
+-- LSPサーバーが提供するスニペット候補でも機能します。'mini.snippets'（このファイルで
+-- セットアップされています）と組み合わせると最高の体験が得られます。
+now_if_args(function()
+  -- より良いユーザー体験のためにLSPレスポンスの後処理をカスタマイズ。
+  -- 'Text' 候補は表示せず（通常ノイズが多い）、スニペットは最後に表示。
+  local process_items_opts = { kind_priority = { Text = -1, Snippet = 99 } }
+  local process_items = function(items, base)
+    return MiniCompletion.default_process_items(items, base, process_items_opts)
+  end
+  require('mini.completion').setup({
+    lsp_completion = {
+      -- この設定がない場合、自動補完は `:h 'completefunc'` を通じて設定されます。
+      -- 必要ではありませんが、`:h 'omnifunc'` を通じて設定する方がクリーンです
+      -- （必要な時だけ設定され、`<C-u>` を使用できます）。
+      source_func = 'omnifunc',
+      auto_setup = false,
+      process_items = process_items,
+    },
+  })
+
+  -- 必要な時だけLSP補完のために 'omnifunc' を設定。
+  local on_attach = function(ev)
+    vim.bo[ev.buf].omnifunc = 'v:lua.MiniCompletion.completefunc_lsp'
+  end
+  Config.new_autocmd('LspAttach', nil, on_attach, "Set 'omnifunc'")
+
+  -- Neovimが 'mini.completion' を通じて特定の補完およびシグネチャ機能を
+  -- サポートするようになったことをサーバーに通知。
+  vim.lsp.config('*', { capabilities = MiniCompletion.get_lsp_capabilities() })
+end)
+
+-- ファイルシステムのナビゲートと操作
+--
+-- ネストされたディレクトリを表示するためにカラムビュー（Miller columns）を使用してナビゲート。
+-- 左上隅のフローティングウィンドウに表示されます。
+--
+-- 通常のバッファとしてテキストを編集することでファイルとディレクトリを操作します。
+--
+-- 使用例:
+-- - `<Leader>ed` - 現在の作業ディレクトリを開く
+-- - `<Leader>ef` - 現在のファイルのディレクトリを開く（ディスク上に存在する必要があります）
+--
+-- 基本的なナビゲーション:
+-- - `l` - カーソル位置のエントリに入る: ディレクトリに移動またはファイルを開く
+-- - `h` - フォーカスされたディレクトリから出る
+-- - 通常のバッファのようにウィンドウをナビゲート
+-- - エクスプローラー内で `g?` を押すとその他のマッピングが表示されます
+--
+-- 基本的な操作:
+-- - 以下のいずれかのアクション後、Normal modeで `=` を押して同期し、アクションについて
+--   よく読み、`y` または `<CR>` を押して確認します
+-- - 新しいエントリ: `o` を押して名前を入力; `/` で終わるとディレクトリを作成
+-- - 名前変更: `C` を押して新しい名前を入力
+-- - 削除: `dd` と入力
+-- - 移動/コピー: `dd`/`yy` と入力し、対象ディレクトリに移動して `p` を押す
+--
+-- 参照:
+-- - `:h MiniFiles-navigation` - ナビゲート方法の詳細
+-- - `:h MiniFiles-manipulation` - 操作方法の詳細
+-- - `:h MiniFiles-examples` - 一般的なセットアップの例
+now_if_args(function()
+  -- ディレクトリ/ファイルプレビューを有効化
+  require('mini.files').setup({ windows = { preview = true } })
+
+  -- すべてのエクスプローラーに共通のブックマークを追加。エクスプローラー内での使用例:
+  -- - `'c` で設定ディレクトリに移動
+  -- - `g?` で利用可能なブックマークを表示
+  local add_marks = function()
+    MiniFiles.set_bookmark('c', vim.fn.stdpath('config'), { desc = 'Config' })
+    local minideps_plugins = vim.fn.stdpath('data') .. '/site/pack/deps/opt'
+    MiniFiles.set_bookmark('p', minideps_plugins, { desc = 'Plugins' })
+    MiniFiles.set_bookmark('w', vim.fn.getcwd, { desc = 'Working directory' })
+  end
+  Config.new_autocmd('User', 'MiniFilesExplorerOpen', add_marks, 'Add bookmarks')
+end)
+
+-- さまざまな小さいが便利な関数群。使用例:
+-- - `<Leader>oz` - 現在のバッファの「ズーム」表示と通常表示を切り替え
+-- - `<Leader>or` - ウィンドウを「編集可能な幅」にリサイズ
+-- - `:lua put_text(vim.lsp.get_clients())` - 関数の出力を現在のバッファの
+--   カーソル下に配置。詳細な探索に便利です。
+-- - `:lua put(MiniMisc.stat_summary(MiniMisc.bench_time(f, 100)))` - 関数 `f` を
+--   100回実行し、実行時間の統計サマリーをレポート
+now_if_args(function()
+  -- `:h MiniMisc.put()` と `:h MiniMisc.put_text()` を公開
+  require('mini.misc').setup()
+
+  -- 現在のファイルパスに基づいて現在の作業ディレクトリを変更。最初のルートマーカー
+  -- （'.git' または 'Makefile'）までファイルツリーを上に検索し、その親ディレクトリを
+  -- 現在のディレクトリとして設定します。
+  -- これは複数のプロジェクトのファイルを同時に扱う際に役立ちます。
+  MiniMisc.setup_auto_root()
+
+  -- ファイルを開く際に最後のカーソル位置を復元
+  MiniMisc.setup_restore_cursor()
+
+  -- Neovimインスタンスの周りの異なる可能性のあるカラーパディングを削除するために
+  -- ターミナルエミュレータの背景とNeovimの背景を同期
+  MiniMisc.setup_termbg_sync()
+end)
 
 -- ステップ2 =================================================================
 
@@ -331,61 +433,6 @@ later(function() require('mini.cmdline').setup() end)
 -- より多くのカスタマイズの機会を提供するため、まだ有効になっています。
 later(function() require('mini.comment').setup() end)
 
--- 補完とシグネチャヘルプ。非同期の「2段階」自動補完を実装します:
--- - 補完をサポートするアタッチされたLSPサーバーに基づく
--- - LSP候補がない場合のフォールバック（組み込みキーワード補完に基づく）
---
--- アタッチされたLSPでのInsert modeでの使用例:
--- - LSPが認識すべきテキスト（変数名など）の入力を開始します。
--- - 100ms後に候補を含むポップアップメニューが表示されます。
--- - `<Tab>` / `<S-Tab>` を押してリストを下/上にナビゲートします。これらは 'mini.keymap'
---   で設定されています。`<C-n>` / `<C-p>` も使用できます。
--- - ナビゲーション中、右側に情報ウィンドウが表示され、LSPサーバーが候補について提供できる
---   追加情報が表示されます。候補が100ms選択された後に表示されます。`<C-f>` / `<C-b>` を
---   使用してスクロールできます。
--- - エントリにナビゲートするとバッファテキストも変更されます。それで満足な場合は、
---   その後入力を続けます。補完を完全に破棄するには、`<C-e>` を押します。
--- - 特別なトリガー（通常は `(`）を押すと、現在の関数/メソッドのシグネチャを表示する
---   ウィンドウが表示されます。入力すると更新され、現在アクティブなパラメーターが表示されます。
---
--- アタッチされたLSPなし、またはLSPがサポートしていない場所（コメントなど）での
--- Insert modeでの使用例:
--- - 現在のバッファまたは開いているバッファに存在する単語の入力を開始します。
--- - 100ms後に候補を含むポップアップメニューが表示されます。
--- - `<Tab>` / `<S-Tab>` または `<C-n>` / `<C-p>` でナビゲートします。これによりバッファ
---   テキストも更新されます。選択に満足したら、入力を続けます。`<C-e>` で停止します。
---
--- LSPサーバーが提供するスニペット候補でも機能します。'mini.snippets'（このファイルで
--- セットアップされています）と組み合わせると最高の体験が得られます。
-later(function()
-  -- より良いユーザー体験のためにLSPレスポンスの後処理をカスタマイズ。
-  -- 'Text' 候補は表示せず（通常ノイズが多い）、スニペットは最後に表示。
-  local process_items_opts = { kind_priority = { Text = -1, Snippet = 99 } }
-  local process_items = function(items, base)
-    return MiniCompletion.default_process_items(items, base, process_items_opts)
-  end
-  require('mini.completion').setup({
-    lsp_completion = {
-      -- この設定がない場合、自動補完は `:h 'completefunc'` を通じて設定されます。
-      -- 必要ではありませんが、`:h 'omnifunc'` を通じて設定する方がクリーンです
-      -- （必要な時だけ設定され、`<C-u>` を使用できます）。
-      source_func = 'omnifunc',
-      auto_setup = false,
-      process_items = process_items,
-    },
-  })
-
-  -- 必要な時だけLSP補完のために 'omnifunc' を設定。
-  local on_attach = function(ev)
-    vim.bo[ev.buf].omnifunc = 'v:lua.MiniCompletion.completefunc_lsp'
-  end
-  Config.new_autocmd('LspAttach', nil, on_attach, "Set 'omnifunc'")
-
-  -- Neovimが 'mini.completion' を通じて特定の補完およびシグネチャ機能を
-  -- サポートするようになったことをサーバーに通知。
-  vim.lsp.config('*', { capabilities = MiniCompletion.get_lsp_capabilities() })
-end)
-
 -- カスタマイズ可能な遅延でカーソル下の単語を自動ハイライト。
 -- 単語の境界は `:h 'iskeyword'` オプションに基づいて定義されます。
 --
@@ -408,51 +455,6 @@ end)
 -- - `:h MiniDiff-diff-summary` - 利用可能なサマリー情報
 -- - `:h MiniDiff.gen_source` - 利用可能な組み込みソース
 later(function() require('mini.diff').setup() end)
-
--- ファイルシステムのナビゲートと操作
---
--- ネストされたディレクトリを表示するためにカラムビュー（Miller columns）を使用してナビゲート。
--- 左上隅のフローティングウィンドウに表示されます。
---
--- 通常のバッファとしてテキストを編集することでファイルとディレクトリを操作します。
---
--- 使用例:
--- - `<Leader>ed` - 現在の作業ディレクトリを開く
--- - `<Leader>ef` - 現在のファイルのディレクトリを開く（ディスク上に存在する必要があります）
---
--- 基本的なナビゲーション:
--- - `l` - カーソル位置のエントリに入る: ディレクトリに移動またはファイルを開く
--- - `h` - フォーカスされたディレクトリから出る
--- - 通常のバッファのようにウィンドウをナビゲート
--- - エクスプローラー内で `g?` を押すとその他のマッピングが表示されます
---
--- 基本的な操作:
--- - 以下のいずれかのアクション後、Normal modeで `=` を押して同期し、アクションについて
---   よく読み、`y` または `<CR>` を押して確認します
--- - 新しいエントリ: `o` を押して名前を入力; `/` で終わるとディレクトリを作成
--- - 名前変更: `C` を押して新しい名前を入力
--- - 削除: `dd` と入力
--- - 移動/コピー: `dd`/`yy` と入力し、対象ディレクトリに移動して `p` を押す
---
--- 参照:
--- - `:h MiniFiles-navigation` - ナビゲート方法の詳細
--- - `:h MiniFiles-manipulation` - 操作方法の詳細
--- - `:h MiniFiles-examples` - 一般的なセットアップの例
-later(function()
-  -- ディレクトリ/ファイルプレビューを有効化
-  require('mini.files').setup({ windows = { preview = true } })
-
-  -- すべてのエクスプローラーに共通のブックマークを追加。エクスプローラー内での使用例:
-  -- - `'c` で設定ディレクトリに移動
-  -- - `g?` で利用可能なブックマークを表示
-  local add_marks = function()
-    MiniFiles.set_bookmark('c', vim.fn.stdpath('config'), { desc = 'Config' })
-    local minideps_plugins = vim.fn.stdpath('data') .. '/site/pack/deps/opt'
-    MiniFiles.set_bookmark('p', minideps_plugins, { desc = 'Plugins' })
-    MiniFiles.set_bookmark('w', vim.fn.getcwd, { desc = 'Working directory' })
-  end
-  Config.new_autocmd('User', 'MiniFilesExplorerOpen', add_marks, 'Add bookmarks')
-end)
 
 -- Neovimの状態に基づいたより直接的なGitアクションのためのGit統合。
 -- フル機能のGitクライアントではなく、Neovimとよりよく統合するヘルパーを提供することを
